@@ -1,0 +1,18 @@
+{
+    "dataset": {
+      "repo_id": "/vla/.data/test",
+      "video_backend": "torchcodec"
+    },
+
+    "output_dir": "/vla/my_vla/src/lerobot/output/checkpoints_tests",
+    "job_name": "demo_results",
+    "resume": false,
+    "num_workers": 4,
+    "batch_size": 8,
+    "steps": 1000,
+    "eval_freq": 1000,
+    "log_freq": 50,
+    "tolerance_s": 0.0001,
+    "save_checkpoint": true,
+    "save_freq": 500
+  }
