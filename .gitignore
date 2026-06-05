@@ -1,6 +1,6 @@
 # my_vla 根仓库
 # src/lerobot 内含独立 .git，其目录规则见 src/lerobot/.gitignore
-# 父仓库建议主要跟踪：文档、.code/、src/lerobot_policy_my_policy/
+# 父仓库建议主要跟踪：文档、.code/、policy/MyPolicy/
 
 ### Secrets & local env ###
 .env
@@ -112,9 +112,9 @@ src/lerobot/**/.pytest_cache/
 src/lerobot/tests/artifacts/cameras/
 
 ### custom policy 插件 ###
-src/lerobot_policy_my_policy/build/
-src/lerobot_policy_my_policy/dist/
-src/lerobot_policy_my_policy/**/*.egg-info/
+policy/MyPolicy/build/
+policy/MyPolicy/dist/
+policy/MyPolicy/**/*.egg-info/
 
 ### Misc ###
 *.stl

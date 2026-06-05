@@ -11,7 +11,7 @@ class MyPolicyPolicy(PreTrainedPolicy): # 实现 5 个抽象方法 -- 必备
     config_class = MyPolicyConfig # 指定配置类  PreTrainedPolicy继承基本属性
     name = "my_policy" # 指定策略类型名 PreTrainedPolicy 继承基本属性
 
-    def __init__(self, config: MyPolicyConfig):
+    def __init__(self, config: MyPolicyConfig,**kwargs):
         super().__init__(config)
         # 获取配置维度,初始化self.model
         action_dim = config.action_feature.shape[0]
