@@ -949,7 +949,7 @@ class PI05Policy(PreTrainedPolicy):
                 **kwargs,
             )
 
-        # 先按 config 构建结构（尚未灌权重）
+        # 先按 config 构建结构（尚未灌权重，随机初始化）
         model = cls(config, **kwargs)
 
         # 手动加载并 remap state_dict
@@ -1031,6 +1031,91 @@ class PI05Policy(PreTrainedPolicy):
             print(f"Warning: Could not remap state dict keys: {e}")
 
         return model
+
+    _VLM_WEIGHT_PREFIX = "model.paligemma_with_expert.paligemma."
+
+    @classmethod
+    def my_from_pretrained(
+        cls: builtins.type[T],
+        pretrained_name_or_path: str | Path,
+        *,
+        config: PreTrainedConfig | None = None,
+        local_files_only: bool = False,
+        **kwargs,
+    ) -> T:
+        """加载预训练 VLM 权重并冻结；Action Expert 与 action/time 投影层保持随机初始化。"""
+        if pretrained_name_or_path is None:
+            raise ValueError("pretrained_name_or_path is required")
+
+        if config is None:
+            config = PreTrainedConfig.from_pretrained(
+                pretrained_name_or_path=pretrained_name_or_path,
+                local_files_only=local_files_only,
+                **kwargs,
+            )
+
+        config.train_expert_only = True
+        model = cls(config, **kwargs)
+
+        vlm_state_dict = cls._load_vlm_state_dict(
+            model,
+            pretrained_name_or_path,
+            local_files_only=local_files_only,
+            **kwargs,
+        )
+        if not vlm_state_dict:
+            print("Warning: no VLM weights loaded; model uses random initialization throughout")
+            return model
+
+        missing_keys, unexpected_keys = model.load_state_dict(vlm_state_dict, strict=False)
+        print(f"✓ Loaded {len(vlm_state_dict)} VLM tensors; AE and projections kept random init")
+        if missing_keys:
+            print(f"  Missing keys (expected for AE/projections): {len(missing_keys)}")
+        if unexpected_keys:
+            print(f"  Unexpected keys: {len(unexpected_keys)}")
+
+        return model
+
+    @classmethod
+    def _load_vlm_state_dict(
+        cls,
+        model: T,
+        pretrained_name_or_path: str | Path,
+        *,
+        local_files_only: bool = False,
+        **kwargs,
+    ) -> dict[str, torch.Tensor]:
+        """从 checkpoint 读取并只保留 PaliGemma (VLM) 权重。"""
+        try:
+            from safetensors.torch import load_file
+            from transformers.utils import cached_file
+
+            resolved_file = cached_file(
+                pretrained_name_or_path,
+                "model.safetensors",
+                cache_dir=kwargs.get("cache_dir"),
+                force_download=kwargs.get("force_download", False),
+                resume_download=kwargs.get("resume_download"),
+                proxies=kwargs.get("proxies"),
+                use_auth_token=kwargs.get("use_auth_token"),
+                revision=kwargs.get("revision"),
+                local_files_only=local_files_only,
+            )
+            original_state_dict = load_file(resolved_file)
+            print(f"Loading VLM weights from: {pretrained_name_or_path}")
+        except Exception as e:
+            print(f"Could not load VLM state dict: {e}")
+            return {}
+
+        fixed_state_dict = model._fix_pytorch_state_dict_keys(original_state_dict, model.config)
+
+        vlm_state_dict: dict[str, torch.Tensor] = {}
+        for key, value in fixed_state_dict.items():
+            remapped_key = key if key.startswith("model.") else f"model.{key}"
+            if remapped_key.startswith(cls._VLM_WEIGHT_PREFIX):
+                vlm_state_dict[remapped_key] = value
+
+        return vlm_state_dict
 
     def _fix_pytorch_state_dict_keys(
         self, state_dict, model_config

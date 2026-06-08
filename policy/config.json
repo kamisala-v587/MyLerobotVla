@@ -1,29 +1,30 @@
 {
-    "dataset": {
-      "repo_id": "/vla/.data/test",
-      "video_backend": "torchcodec"
-    },
-    "policy": {
-      "type": "my_policy",
-      "device": "cuda",
-      "push_to_hub": false,
-      "chunk_size": 1,
-      "n_action_steps": 1,
-      "hidden_dim": 256
-    },
-    "output_dir": "/vla/my_vla/policy/checkpoints",
-    "job_name": "my_policy_sft",
-    "resume": false,
-    "num_workers": 0,
-    "batch_size": 4,
-    "steps": 100,
-    "eval_freq": 100,
-    "log_freq": 10,
-    "tolerance_s": 0.0001,
-    "save_checkpoint": true,
-    "save_freq": 100,
-    "wandb": {
-      "enable": false
-    }
+  "dataset": {
+    "repo_id": "/vla/.data/test",
+    "video_backend": "torchcodec"
+  },
+  "policy": {
+    "type": "pi05",
+    "device": "cuda",
+    "push_to_hub": false,
+    "dtype": "bfloat16",
+    "chunk_size": 50,
+    "n_action_steps": 50,
+    "train_expert_only": true,
+    "gradient_checkpointing": true
+  },
+  "output_dir": "/vla/my_vla/policy/checkpoints",
+  "job_name": "pi05-test",
+  "resume": false,
+  "num_workers": 0,
+  "batch_size": 1,
+  "steps": 100,
+  "eval_freq": 100,
+  "log_freq": 10,
+  "tolerance_s": 0.0001,
+  "save_checkpoint": true,
+  "save_freq": 100,
+  "wandb": {
+    "enable": false
   }
-  
+}
