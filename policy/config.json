@@ -1,29 +1,27 @@
 {
   "dataset": {
-    "repo_id": "/vla/.data/test",
+    "repo_id": "/vla/.data/adjust_bottle",
     "video_backend": "torchcodec"
   },
   "policy": {
-    "type": "pi05",
+    "type": "my_pi05",
     "device": "cuda",
     "push_to_hub": false,
     "dtype": "bfloat16",
     "chunk_size": 50,
-    "n_action_steps": 50,
-    "train_expert_only": true,
-    "gradient_checkpointing": true
+    "n_action_steps": 50
   },
   "output_dir": "/vla/my_vla/policy/checkpoints",
-  "job_name": "pi05-test",
+  "job_name": "myvla_adjust_bottle",
   "resume": false,
   "num_workers": 0,
-  "batch_size": 1,
-  "steps": 100,
+  "batch_size": 16,
+  "steps": 10000,
   "eval_freq": 100,
   "log_freq": 10,
   "tolerance_s": 0.0001,
   "save_checkpoint": true,
-  "save_freq": 100,
+  "save_freq": 1000,
   "wandb": {
     "enable": false
   }
