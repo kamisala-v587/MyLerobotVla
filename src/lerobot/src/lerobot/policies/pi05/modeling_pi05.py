@@ -606,11 +606,13 @@ class PI05Pytorch(nn.Module):  # 见 openpi `PI0Pytorch`
         return torch.where(att_2d_masks_4d, 0.0, OPENPI_ATTENTION_MASK_VALUE)
 
     def sample_noise(self, shape, device):
+        # 噪声 dtype 需与 action_in_proj 权重一致，否则 bfloat16 模型会 dtype mismatch
+        noise_dtype = self.action_in_proj.weight.dtype
         return torch.normal(
             mean=0.0,
             std=1.0,
             size=shape,
-            dtype=torch.float32,
+            dtype=noise_dtype,
             device=device,
         )
 
@@ -754,7 +756,7 @@ class PI05Pytorch(nn.Module):  # 见 openpi `PI0Pytorch`
         ) 
 
         suffix_out = suffix_out[:, -self.config.chunk_size :]
-        suffix_out = suffix_out.to(dtype=torch.float32)
+        suffix_out = suffix_out.to(dtype=self.action_out_proj.weight.dtype)
 
         def action_out_proj_func(suffix_out):
             return self.action_out_proj(suffix_out)
@@ -808,9 +810,10 @@ class PI05Pytorch(nn.Module):  # 见 openpi `PI0Pytorch`
         dt = -1.0 / num_steps
 
         x_t = noise
+        step_dtype = self.action_in_proj.weight.dtype
         for step in range(num_steps):
             time = 1.0 + step * dt
-            time_tensor = torch.tensor(time, dtype=torch.float32, device=device).expand(bsize)
+            time_tensor = torch.tensor(time, dtype=step_dtype, device=device).expand(bsize)
 
             def denoise_step_partial_call(input_x_t, current_timestep=time_tensor):
                 return self.denoise_step(
@@ -878,7 +881,7 @@ class PI05Pytorch(nn.Module):  # 见 openpi `PI0Pytorch`
 
         suffix_out = outputs_embeds[1]
         suffix_out = suffix_out[:, -self.config.chunk_size :]
-        suffix_out = suffix_out.to(dtype=torch.float32)
+        suffix_out = suffix_out.to(dtype=self.action_out_proj.weight.dtype)
         return self.action_out_proj(suffix_out)
 
 

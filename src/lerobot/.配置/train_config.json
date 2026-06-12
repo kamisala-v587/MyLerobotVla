@@ -1,18 +1,17 @@
 {
     "dataset": {
-      "repo_id": "/vla/.data/test",
-      "video_backend": "torchcodec"
+      "repo_id": "/vla/.data/lerobot_v3_dataset_fixed_v2",
+      "video_backend": "torchcodec",
+      "use_imagenet_stats": false
     },
-
-    "output_dir": "/vla/my_vla/src/lerobot/output/checkpoints_tests",
+    "output_dir": "/vla/my_vla/src/lerobot/output/checkpoints",
     "job_name": "demo_results",
     "resume": false,
     "num_workers": 4,
     "batch_size": 8,
-    "steps": 1000,
+    "steps": 200,
     "eval_freq": 1000,
     "log_freq": 50,
-    "tolerance_s": 0.0001,
     "save_checkpoint": true,
     "save_freq": 500
- }
+}
