@@ -104,7 +104,7 @@ FEATURE_CONFIG = {
 }
 for _cam in CAMERAS:
     FEATURE_CONFIG[f"{IMAGE_KEY_PREFIX}{_cam}"] = {
-        "dtype": "image",
+        "dtype": "video",
         "shape": IMAGE_SHAPE_CHW,
         "names": ["channels", "height", "width"],
     }
@@ -119,7 +119,7 @@ CONVERT_CONFIG = {
     "features": FEATURE_CONFIG,
     "fps": FPS,
     # 常见配置（与飞升-神功.ipynb 保持一致）
-    "use_videos": False,
+    "use_videos": True,
     "tolerance_s": 0.0001,
     "video_backend": "torchcodec",
     "image_writer_processes": 4,

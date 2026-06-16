@@ -1,24 +1,20 @@
 {
   "dataset": {
-    "repo_id": "/vla/.data/adjust_bottle",
+    "repo_id": "/vla/.data/lerobot_v3/adjust_bottle",
     "video_backend": "torchcodec"
   },
   "policy": {
-    "type": "my_pi05",
-    "device": "cuda",
-    "push_to_hub": false,
-    "dtype": "bfloat16",
-    "chunk_size": 50,
-    "n_action_steps": 50
+    "type": "pi05",
+    "device": "cuda"
   },
   "output_dir": "/vla/my_vla/policy/checkpoints",
-  "job_name": "myvla_adjust_bottle",
+  "job_name": "openpi_pi05",
   "resume": false,
-  "num_workers": 0,
-  "batch_size": 16,
-  "steps": 10000,
+  "num_workers": 8,
+  "batch_size": 20,
+  "steps": 12000,
   "eval_freq": 100,
-  "log_freq": 10,
+  "log_freq": 50,
   "tolerance_s": 0.0001,
   "save_checkpoint": true,
   "save_freq": 1000,
