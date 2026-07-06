@@ -76,3 +76,19 @@ accelerate launch -m lerobot.scripts.lerobot_train \
   --config_path=/vla/.models/lerobot-pi05_base/LerobotConfig.json \
   --dataset.repo_id=/vla/.data/adjust_bottle \
   --policy.path=/vla/.models/lerobot-pi05_base
+
+**6.20 预训练启动**
+cd /vla/my_tbot
+conda activate tbot_sa1
+export HF_HUB_OFFLINE=1
+export TRANSFORMERS_OFFLINE=1
+export TOKENIZERS_PARALLELISM=false
+
+accelerate launch --multi_gpu --num_processes=2 \
+  -m lerobot.scripts.lerobot_train \
+  --config_path=/vla/my_tbot/.配置/pretrain_config.json
+
+
+### 临时
+/vla/.models/tbot_ckpts/100000/pretrained_model
+python .code/serve_lerobot_policy.py   --ckpt_path /vla/.models/tbot_ckpts/100000/pretrained_model  --qwen3_vl_pretrained_path /vla/.models/Qwen3-VL-2B-Instruct   --qwen3_vl_processor_path /vla/.models/Qwen3-VL-2B-Instruct   --cosmos_tokenizer_path_or_name /vla/.models/Cosmos-Tokenizer-CI8x8   --host 0.0.0.0 --port 8000   --infer_horizon 50  --action_mode delta
